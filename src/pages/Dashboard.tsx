@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import ChatInterface from "@/components/ChatInterface";
+import { CalendarView } from "@/components/CalendarView";
 import { Button } from "@/components/ui/button";
-import { LogOut, Sparkles } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LogOut, Sparkles, MessageSquare, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -94,8 +96,27 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto px-4 py-6 max-w-4xl">
-        <ChatInterface userId={user.id} />
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-6xl">
+        <Tabs defaultValue="chat" className="animate-fade-in">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="chat" className="gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Chat
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="gap-2">
+              <Calendar className="h-4 w-4" />
+              Calendario
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="chat">
+            <ChatInterface userId={user.id} />
+          </TabsContent>
+          
+          <TabsContent value="calendar">
+            <CalendarView userId={user.id} />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
