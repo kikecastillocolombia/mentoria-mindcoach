@@ -74,7 +74,7 @@ const ConversationsList = ({
       setConversations(prev => prev.filter(c => c.id !== id));
       
       if (currentConversationId === id) {
-        onNewConversation();
+        onSelectConversation(null as any);
       }
 
       toast({
