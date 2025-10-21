@@ -26,6 +26,7 @@ interface ConversationsListProps {
   currentConversationId: string | null;
   onSelectConversation: (id: string) => void;
   onNewConversation: () => void;
+  onSwitchToChat?: () => void;
 }
 
 const ConversationsList = ({
@@ -33,6 +34,7 @@ const ConversationsList = ({
   currentConversationId,
   onSelectConversation,
   onNewConversation,
+  onSwitchToChat,
 }: ConversationsListProps) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -163,7 +165,12 @@ const ConversationsList = ({
           {conversations.map((conv) => (
             <div
               key={conv.id}
-              onClick={() => editingId !== conv.id && onSelectConversation(conv.id)}
+              onClick={() => {
+                if (editingId !== conv.id) {
+                  onSelectConversation(conv.id);
+                  onSwitchToChat?.();
+                }
+              }}
               className={`group p-3 rounded-xl transition-all duration-300 flex items-center justify-between ${
                 currentConversationId === conv.id
                   ? "bg-primary/10 border border-primary/20"

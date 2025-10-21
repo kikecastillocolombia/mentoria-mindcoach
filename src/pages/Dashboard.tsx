@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("chat");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -77,6 +78,7 @@ const Dashboard = () => {
 
       if (error) throw error;
       setConversationId(newConversation.id);
+      setActiveTab("chat");
       
       toast({
         title: "Nueva conversación",
@@ -158,7 +160,7 @@ const Dashboard = () => {
       </header>
 
       <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
-        <Tabs defaultValue="chat" className="animate-fade-in">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-fade-in">
           <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="chat" className="gap-2">
               <MessageSquare className="h-4 w-4" />
@@ -189,6 +191,7 @@ const Dashboard = () => {
                 currentConversationId={conversationId}
                 onSelectConversation={setConversationId}
                 onNewConversation={createNewConversation}
+                onSwitchToChat={() => setActiveTab("chat")}
               />
             </div>
           </TabsContent>
