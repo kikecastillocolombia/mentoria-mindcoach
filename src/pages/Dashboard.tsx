@@ -7,7 +7,7 @@ import ConversationsList from "@/components/ConversationsList";
 import { CalendarView } from "@/components/CalendarView";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Sparkles, MessageSquare, Calendar } from "lucide-react";
+import { LogOut, Sparkles, MessageSquare, Calendar, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -159,10 +159,14 @@ const Dashboard = () => {
 
       <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
         <Tabs defaultValue="chat" className="animate-fade-in">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="chat" className="gap-2">
               <MessageSquare className="h-4 w-4" />
               Chat
+            </TabsTrigger>
+            <TabsTrigger value="history" className="gap-2">
+              <History className="h-4 w-4" />
+              Historial
             </TabsTrigger>
             <TabsTrigger value="calendar" className="gap-2">
               <Calendar className="h-4 w-4" />
@@ -171,22 +175,21 @@ const Dashboard = () => {
           </TabsList>
           
           <TabsContent value="chat">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-1">
-                <ConversationsList
-                  userId={user.id}
-                  currentConversationId={conversationId}
-                  onSelectConversation={setConversationId}
-                  onNewConversation={createNewConversation}
-                />
-              </div>
-              <div className="lg:col-span-3">
-                <ChatInterface
-                  userId={user.id}
-                  conversationId={conversationId}
-                  onConversationChange={handleConversationChange}
-                />
-              </div>
+            <ChatInterface
+              userId={user.id}
+              conversationId={conversationId}
+              onConversationChange={handleConversationChange}
+            />
+          </TabsContent>
+
+          <TabsContent value="history">
+            <div className="max-w-2xl mx-auto">
+              <ConversationsList
+                userId={user.id}
+                currentConversationId={conversationId}
+                onSelectConversation={setConversationId}
+                onNewConversation={createNewConversation}
+              />
             </div>
           </TabsContent>
           
