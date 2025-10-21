@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import ChatInterface from "@/components/ChatInterface";
+import ConversationsList from "@/components/ConversationsList";
 import { CalendarView } from "@/components/CalendarView";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -33,6 +35,65 @@ const Dashboard = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    if (user) {
+      initializeConversation();
+    }
+  }, [user]);
+
+  const initializeConversation = async () => {
+    if (!user) return;
+    
+    try {
+      const { data: conversations, error } = await supabase
+        .from("conversations")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false })
+        .limit(1);
+
+      if (error) throw error;
+
+      if (conversations && conversations.length > 0) {
+        setConversationId(conversations[0].id);
+      } else {
+        await createNewConversation();
+      }
+    } catch (error) {
+      console.error("Error al inicializar conversación:", error);
+    }
+  };
+
+  const createNewConversation = async () => {
+    if (!user) return;
+    
+    try {
+      const { data: newConversation, error } = await supabase
+        .from("conversations")
+        .insert([{ user_id: user.id, title: "Nueva Conversación" }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      setConversationId(newConversation.id);
+      
+      toast({
+        title: "Nueva conversación",
+        description: "Se ha creado una nueva conversación",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo crear la conversación",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleConversationChange = () => {
+    // Trigger para actualizar la lista de conversaciones
+  };
 
   const handleSignOut = async () => {
     try {
@@ -96,7 +157,7 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto px-4 py-6 max-w-6xl">
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
         <Tabs defaultValue="chat" className="animate-fade-in">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="chat" className="gap-2">
@@ -110,7 +171,23 @@ const Dashboard = () => {
           </TabsList>
           
           <TabsContent value="chat">
-            <ChatInterface userId={user.id} />
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-1">
+                <ConversationsList
+                  userId={user.id}
+                  currentConversationId={conversationId}
+                  onSelectConversation={setConversationId}
+                  onNewConversation={createNewConversation}
+                />
+              </div>
+              <div className="lg:col-span-3">
+                <ChatInterface
+                  userId={user.id}
+                  conversationId={conversationId}
+                  onConversationChange={handleConversationChange}
+                />
+              </div>
+            </div>
           </TabsContent>
           
           <TabsContent value="calendar">

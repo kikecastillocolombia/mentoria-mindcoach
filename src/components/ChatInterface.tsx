@@ -15,13 +15,14 @@ interface Message {
 
 interface ChatInterfaceProps {
   userId: string;
+  conversationId: string | null;
+  onConversationChange: () => void;
 }
 
-const ChatInterface = ({ userId }: ChatInterfaceProps) => {
+const ChatInterface = ({ userId, conversationId, onConversationChange }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -34,42 +35,12 @@ const ChatInterface = ({ userId }: ChatInterfaceProps) => {
   }, [messages]);
 
   useEffect(() => {
-    initializeConversation();
-  }, [userId]);
-
-  const initializeConversation = async () => {
-    try {
-      const { data: conversations, error: fetchError } = await supabase
-        .from("conversations")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(1);
-
-      if (fetchError) throw fetchError;
-
-      if (conversations && conversations.length > 0) {
-        setConversationId(conversations[0].id);
-        await loadMessages(conversations[0].id);
-      } else {
-        const { data: newConversation, error: createError } = await supabase
-          .from("conversations")
-          .insert([{ user_id: userId, title: "Nueva Conversación" }])
-          .select()
-          .single();
-
-        if (createError) throw createError;
-        setConversationId(newConversation.id);
-      }
-    } catch (error) {
-      console.error("Error al inicializar conversación:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo inicializar la conversación",
-        variant: "destructive",
-      });
+    if (conversationId) {
+      loadMessages(conversationId);
+    } else {
+      setMessages([]);
     }
-  };
+  }, [conversationId]);
 
   const loadMessages = async (convId: string) => {
     try {
@@ -191,6 +162,8 @@ const ChatInterface = ({ userId }: ChatInterfaceProps) => {
       await supabase
         .from("messages")
         .insert([{ conversation_id: conversationId, role: "assistant", content: assistantContent }]);
+      
+      onConversationChange();
 
     } catch (error) {
       console.error("Error en el chat:", error);
