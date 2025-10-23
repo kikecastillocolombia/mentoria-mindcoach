@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Plus, Target, Calendar as CalendarIcon, Check, Trash2 } from "lucide-react";
+import { Plus, Target, Calendar as CalendarIcon, Check, Trash2, Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -43,6 +43,7 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [events, setEvents] = useState<Event[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -81,31 +82,76 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
     const [hours, minutes] = formData.time.split(":");
     eventDateTime.setHours(parseInt(hours), parseInt(minutes));
 
-    const { error } = await supabase.from("events").insert({
-      user_id: userId,
-      title: formData.title,
-      description: formData.description,
-      event_date: eventDateTime.toISOString(),
-      event_type: formData.event_type,
-    });
+    if (editingEventId) {
+      // Editar evento existente
+      const { error } = await supabase
+        .from("events")
+        .update({
+          title: formData.title,
+          description: formData.description,
+          event_date: eventDateTime.toISOString(),
+          event_type: formData.event_type,
+        })
+        .eq("id", editingEventId);
 
-    if (error) {
+      if (error) {
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar el evento",
+          variant: "destructive",
+        });
+        return;
+      }
+
       toast({
-        title: "Error",
-        description: "No se pudo crear el evento",
-        variant: "destructive",
+        title: "✓ Evento actualizado",
+        description: "Los cambios se guardaron correctamente",
       });
-      return;
+    } else {
+      // Crear nuevo evento
+      const { error } = await supabase.from("events").insert({
+        user_id: userId,
+        title: formData.title,
+        description: formData.description,
+        event_date: eventDateTime.toISOString(),
+        event_type: formData.event_type,
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "No se pudo crear el evento",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "✓ Evento creado",
+        description: `${formData.event_type === "cita" ? "Cita" : "Objetivo"} agregado correctamente`,
+      });
     }
 
-    toast({
-      title: "✓ Evento creado",
-      description: `${formData.event_type === "cita" ? "Cita" : "Objetivo"} agregado correctamente`,
-    });
-
     setFormData({ title: "", description: "", event_type: "objetivo", time: "12:00" });
+    setEditingEventId(null);
     setIsDialogOpen(false);
     fetchEvents();
+  };
+
+  const handleEditEvent = (event: Event) => {
+    const eventDate = new Date(event.event_date);
+    const hours = eventDate.getHours().toString().padStart(2, "0");
+    const minutes = eventDate.getMinutes().toString().padStart(2, "0");
+    
+    setEditingEventId(event.id);
+    setSelectedDate(eventDate);
+    setFormData({
+      title: event.title,
+      description: event.description || "",
+      event_type: event.event_type,
+      time: `${hours}:${minutes}`,
+    });
+    setIsDialogOpen(true);
   };
 
   const toggleComplete = async (eventId: string, completed: boolean) => {
@@ -187,7 +233,13 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
               },
             }}
           />
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) {
+              setEditingEventId(null);
+              setFormData({ title: "", description: "", event_type: "objetivo", time: "12:00" });
+            }
+          }}>
             <DialogTrigger asChild>
               <Button className="w-full mt-4" disabled={!selectedDate}>
                 <Plus className="h-4 w-4 mr-2" />
@@ -197,7 +249,7 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
-                  Nuevo evento para {selectedDate && format(selectedDate, "PPP", { locale: es })}
+                  {editingEventId ? "Editar evento" : "Nuevo evento"} para {selectedDate && format(selectedDate, "PPP", { locale: es })}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
@@ -246,7 +298,7 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
                   />
                 </div>
                 <Button onClick={handleAddEvent} className="w-full">
-                  Crear Evento
+                  {editingEventId ? "Guardar Cambios" : "Crear Evento"}
                 </Button>
               </div>
             </DialogContent>
@@ -303,6 +355,13 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
                         onClick={() => toggleComplete(event.id, event.completed)}
                       >
                         <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEditEvent(event)}
+                      >
+                        <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
