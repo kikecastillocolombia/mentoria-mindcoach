@@ -348,27 +348,30 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
                         <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
                       )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                       <Button
-                        size="sm"
+                        size="icon"
                         variant={event.completed ? "secondary" : "outline"}
                         onClick={() => toggleComplete(event.id, event.completed)}
+                        className="h-8 w-8"
                       >
-                        <Check className="h-4 w-4" />
+                        <Check className="h-3.5 w-3.5" />
                       </Button>
                       <Button
-                        size="sm"
+                        size="icon"
                         variant="outline"
                         onClick={() => handleEditEvent(event)}
+                        className="h-8 w-8"
                       >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-3.5 w-3.5" />
                       </Button>
                       <Button
-                        size="sm"
+                        size="icon"
                         variant="destructive"
                         onClick={() => handleDeleteEvent(event.id)}
+                        className="h-8 w-8"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </div>
