@@ -196,7 +196,7 @@ const ChatInterface = ({ userId, conversationId, onConversationChange }: ChatInt
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-medium overflow-hidden">
+    <div className="flex flex-col h-full rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-medium overflow-hidden">
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-in fade-in duration-700">
