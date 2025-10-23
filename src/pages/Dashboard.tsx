@@ -132,8 +132,8 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-accent/20 to-background overflow-hidden">
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm flex-shrink-0">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-accent/20 to-background">
+      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary shadow-soft">
@@ -159,9 +159,9 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl overflow-hidden flex flex-col">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-fade-in flex flex-col h-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6 flex-shrink-0">
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-fade-in">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="chat" className="gap-2">
               <MessageSquare className="h-4 w-4" />
               Chat
@@ -176,7 +176,7 @@ const Dashboard = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="chat" className="flex-1 m-0">
+          <TabsContent value="chat">
             <ChatInterface
               userId={user.id}
               conversationId={conversationId}
@@ -184,8 +184,8 @@ const Dashboard = () => {
             />
           </TabsContent>
 
-          <TabsContent value="history" className="flex-1 m-0 overflow-auto">
-            <div className="max-w-2xl mx-auto h-full">
+          <TabsContent value="history">
+            <div className="max-w-2xl mx-auto">
               <ConversationsList
                 userId={user.id}
                 currentConversationId={conversationId}
@@ -196,7 +196,7 @@ const Dashboard = () => {
             </div>
           </TabsContent>
           
-          <TabsContent value="calendar" className="flex-1 m-0 overflow-auto">
+          <TabsContent value="calendar">
             <CalendarView userId={user.id} />
           </TabsContent>
         </Tabs>
