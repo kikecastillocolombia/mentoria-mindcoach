@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Plus, Target, Calendar as CalendarIcon, Check } from "lucide-react";
+import { Plus, Target, Calendar as CalendarIcon, Check, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -122,6 +122,29 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
       });
       return;
     }
+
+    fetchEvents();
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    const { error } = await supabase
+      .from("events")
+      .delete()
+      .eq("id", eventId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el evento",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "✓ Evento eliminado",
+      description: "El evento ha sido eliminado correctamente",
+    });
 
     fetchEvents();
   };
@@ -273,13 +296,22 @@ export const CalendarView = ({ userId }: CalendarViewProps) => {
                         <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
                       )}
                     </div>
-                    <Button
-                      size="sm"
-                      variant={event.completed ? "secondary" : "outline"}
-                      onClick={() => toggleComplete(event.id, event.completed)}
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant={event.completed ? "secondary" : "outline"}
+                        onClick={() => toggleComplete(event.id, event.completed)}
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDeleteEvent(event.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
