@@ -7,8 +7,9 @@ import ConversationsList from "@/components/ConversationsList";
 import { CalendarView } from "@/components/CalendarView";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Sparkles, MessageSquare, Calendar, History } from "lucide-react";
+import { LogOut, Sparkles, MessageSquare, Calendar, History, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { HabitsGamification } from "@/components/HabitsGamification";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -161,7 +162,7 @@ const Dashboard = () => {
 
       <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-fade-in">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="chat" className="gap-2">
               <MessageSquare className="h-4 w-4" />
               Chat
@@ -173,6 +174,10 @@ const Dashboard = () => {
             <TabsTrigger value="calendar" className="gap-2">
               <Calendar className="h-4 w-4" />
               Calendario
+            </TabsTrigger>
+            <TabsTrigger value="habits" className="gap-2">
+              <Trophy className="h-4 w-4" />
+              Hábitos
             </TabsTrigger>
           </TabsList>
           
@@ -198,6 +203,10 @@ const Dashboard = () => {
           
           <TabsContent value="calendar">
             <CalendarView userId={user.id} />
+          </TabsContent>
+          
+          <TabsContent value="habits">
+            <HabitsGamification userId={user.id} />
           </TabsContent>
         </Tabs>
       </main>
