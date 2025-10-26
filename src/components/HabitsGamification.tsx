@@ -310,18 +310,6 @@ export const HabitsGamification = ({ userId }: HabitsGamificationProps) => {
           ) : (
             <div className="overflow-x-auto">
               <div className="min-w-max">
-                {/* Header con días */}
-                <div className="flex gap-1 mb-2 ml-40">
-                  {daysInMonth.map((day) => (
-                    <div
-                      key={day.toISOString()}
-                      className="w-8 h-8 flex items-center justify-center text-xs font-medium text-muted-foreground"
-                    >
-                      {format(day, "d")}
-                    </div>
-                  ))}
-                </div>
-
                 {/* Filas de hábitos */}
                 {habits.map((habit) => (
                   <div key={habit.id} className="flex items-center gap-2 mb-2">
@@ -344,11 +332,13 @@ export const HabitsGamification = ({ userId }: HabitsGamificationProps) => {
                           <button
                             key={day.toISOString()}
                             onClick={() => handleCellClick(habit.id, day)}
-                            className={`w-8 h-8 rounded border border-border transition-all ${getCellColor(
+                            className={`w-8 h-8 rounded border border-border transition-all flex items-center justify-center text-xs font-medium ${getCellColor(
                               status
                             )}`}
                             title={`${habit.name} - ${format(day, "d MMM", { locale: es })}`}
-                          />
+                          >
+                            {format(day, "d")}
+                          </button>
                         );
                       })}
                     </div>
