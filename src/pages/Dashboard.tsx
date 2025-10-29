@@ -7,9 +7,10 @@ import ConversationsList from "@/components/ConversationsList";
 import { CalendarView } from "@/components/CalendarView";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Sparkles, MessageSquare, Calendar, History, Trophy } from "lucide-react";
+import { LogOut, Sparkles, MessageSquare, Calendar, History, Trophy, CheckSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { HabitsGamification } from "@/components/HabitsGamification";
+import { TasksList } from "@/components/TasksList";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -162,7 +163,7 @@ const Dashboard = () => {
 
       <main className="flex-1 container mx-auto px-4 py-6 max-w-7xl">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-fade-in">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-5 mb-6">
             <TabsTrigger value="chat" className="gap-2">
               <MessageSquare className="h-4 w-4" />
               Chat
@@ -178,6 +179,10 @@ const Dashboard = () => {
             <TabsTrigger value="habits" className="gap-2">
               <Trophy className="h-4 w-4" />
               Hábitos
+            </TabsTrigger>
+            <TabsTrigger value="tasks" className="gap-2">
+              <CheckSquare className="h-4 w-4" />
+              Tareas
             </TabsTrigger>
           </TabsList>
           
@@ -207,6 +212,10 @@ const Dashboard = () => {
           
           <TabsContent value="habits">
             <HabitsGamification userId={user.id} />
+          </TabsContent>
+          
+          <TabsContent value="tasks">
+            <TasksList userId={user.id} />
           </TabsContent>
         </Tabs>
       </main>
