@@ -32,7 +32,7 @@ const Auth = () => {
             <Sparkles className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
-            BienesTia
+            MentorIA
           </h1>
           <p className="text-muted-foreground text-lg">
             Tu acompañante en el camino hacia el bienestar
