@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Minimize2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ChatMessage from "./ChatMessage";
 
@@ -17,9 +17,10 @@ interface ChatInterfaceProps {
   userId: string;
   conversationId: string | null;
   onConversationChange: () => void;
+  onMinimize?: () => void;
 }
 
-const ChatInterface = ({ userId, conversationId, onConversationChange }: ChatInterfaceProps) => {
+const ChatInterface = ({ userId, conversationId, onConversationChange, onMinimize }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -197,6 +198,20 @@ const ChatInterface = ({ userId, conversationId, onConversationChange }: ChatInt
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-medium overflow-hidden">
+      {onMinimize && (
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-card/80">
+          <span className="text-sm font-medium text-muted-foreground">Conversación activa</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onMinimize}
+            className="h-8 px-2 hover:bg-accent/50"
+          >
+            <Minimize2 className="w-4 h-4 mr-1" />
+            Minimizar
+          </Button>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-in fade-in duration-700">

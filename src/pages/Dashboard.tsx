@@ -191,6 +191,7 @@ const Dashboard = () => {
               userId={user.id}
               conversationId={conversationId}
               onConversationChange={handleConversationChange}
+              onMinimize={() => setActiveTab("history")}
             />
           </TabsContent>
 
